@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 reveal">
+    <h2 class="fw-bold">{{ action }} Data Smartphone</h2>
+    <a href="{{ url_for('smartphones.index') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Kembali</a>
+</div>
+
+<div class="card border-0 shadow-sm reveal">
+    <div class="card-body p-4">
+        <form method="POST">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Nama Smartphone</label>
+                    <input type="text" name="nama" class="form-control" required value="{{ smartphone.nama if smartphone else '' }}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Harga (Rp) <span class="text-muted fw-normal small">(Kriteria Cost)</span></label>
+                    <input type="number" name="harga" class="form-control" required step="0.01" value="{{ smartphone.harga if smartphone else '' }}">
+                </div>
+                
+                <div class="col-12 mt-4 mb-2">
+                    <h6 class="fw-bold text-primary border-bottom pb-2">Nilai Benefit</h6>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Skor Foto (1-100)</label>
+                    <input type="number" name="foto" class="form-control" required step="0.01" value="{{ smartphone.foto if smartphone else '' }}">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Skor Video (1-100)</label>
+                    <input type="number" name="video" class="form-control" required step="0.01" value="{{ smartphone.video if smartphone else '' }}">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Skor Chipset (Puluhan Ribu)</label>
+                    <input type="number" name="chipset" class="form-control" required step="0.01" value="{{ smartphone.chipset if smartphone else '' }}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Kapasitas Baterai (mAh)</label>
+                    <input type="number" name="baterai" class="form-control" required step="0.01" value="{{ smartphone.baterai if smartphone else '' }}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Kapasitas Storage (GB)</label>
+                    <input type="number" name="storage" class="form-control" required step="0.01" value="{{ smartphone.storage if smartphone else '' }}">
+                </div>
+            </div>
+            <div class="mt-4 pt-3 border-top text-end">
+                <button type="submit" class="btn btn-primary px-4"><i class="bi bi-save"></i> Simpan Data</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

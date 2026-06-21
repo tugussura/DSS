@@ -1,0 +1,255 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section mb-5 reveal">
+    <div class="row align-items-center">
+        <div class="col-lg-7">
+            <div class="hero-badge shadow-sm">
+                <i class="bi bi-stars"></i> AHP + TOPSIS Decision Support System
+            </div>
+            <h1 class="hero-title">Membantu Content Creator dalam memilih smartphone terbaik</h1>
+            <p class="hero-desc">Sistem ini membantu menentukan smartphone terbaik berdasarkan preferensi Anda secara objektif menggunakan metode Analytical Hierarchy Process (AHP) dan TOPSIS.</p>
+            <div class="d-flex gap-3">
+                <a href="{{ url_for('smartphones.index') }}" class="btn btn-outline-light px-4 py-2 fw-bold shadow-sm no-scale" style="border-radius: 12px;">
+                    <i class="bi bi-phone me-2"></i> Data Smartphone
+                </a>
+                <a href="{{ url_for('dss.step1') }}" class="btn btn-primary px-4 py-2 fw-bold shadow-sm" style="border-radius: 12px;">
+                    Mulai Rekomendasi <i class="bi bi-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-5 d-none d-lg-block">
+            <!-- Modern Illustration mockup -->
+            <div class="p-4 bg-white bg-opacity-10 rounded-4 border border-white border-opacity-25 shadow-lg" style="backdrop-filter: blur(10px);">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="rounded-circle bg-success p-2 me-3 shadow-sm d-flex align-items-center justify-content-center" style="width:48px;height:48px;">
+                        <i class="bi bi-check2-circle text-white fs-4"></i>
+                    </div>
+                    <div>
+                        <div class="text-white-50 small fw-bold text-uppercase tracking-wider">Sistem Rekomendasi</div>
+                        <div class="text-white fw-bold fs-5">Siap Digunakan</div>
+                    </div>
+                </div>
+
+                <div class="bg-white bg-opacity-10 rounded-3 p-3 border border-white border-opacity-10">
+                    <div class="d-flex justify-content-between text-white-50 small mb-2 fw-bold"><span>Konsistensi AHP (CR)</span> <span>< 0.1</span></div>
+                    <div class="progress" style="height: 6px; background-color: rgba(255,255,255,0.1);"><div class="progress-bar bg-info" style="width: 100%"></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Smart Insight Cards -->
+<div class="row g-4 mb-5 reveal">
+    <div class="col-md-3 col-sm-6">
+        <div class="insight-card">
+            <div class="insight-icon primary"><i class="bi bi-phone"></i></div>
+            <div class="insight-value">{{ total_smartphones }}</div>
+            <div class="insight-label">Total Smartphone</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="insight-card">
+            <div class="insight-icon info"><i class="bi bi-list-check"></i></div>
+            <div class="insight-value">{{ total_criteria }}</div>
+            <div class="insight-label">Total Kriteria</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="insight-card">
+            <div class="insight-icon warning"><i class="bi bi-person-video2"></i></div>
+            <div class="insight-value">4</div>
+            <div class="insight-label">Creator Profile</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="insight-card">
+            <div class="insight-icon success"><i class="bi bi-sliders"></i></div>
+            <div class="insight-value text-truncate" style="font-size: 1.5rem;">Tersedia</div>
+            <div class="insight-label">Custom Profile</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-12 reveal">
+        <h4 class="fw-bold mb-4" style="color: #0F172A;">Top 3 Recommendations</h4>
+    </div>
+    {% if top_smartphones %}
+        {% for sp in top_smartphones[:3] %}
+        <div class="col-md-4 reveal" style="animation-delay: {{ loop.index * 0.1 }}s;">
+            <div class="featured-card p-4 h-100 d-flex flex-column justify-content-center shadow-sm">
+                <div class="featured-rank-badge shadow-sm" style="{% if loop.index == 1 %}background: #FEF3C7; color: #D97706;{% elif loop.index == 2 %}background: #F1F5F9; color: #64748B;{% else %}background: #FFEDD5; color: #C2410C;{% endif %}">
+                    <i class="bi bi-award-fill"></i> Rank #{{ loop.index }}
+                </div>
+                
+                <div class="mb-4">
+                    <h3 class="featured-title fs-4">{{ sp.nama }}</h3>
+                    <div class="text-muted fw-medium small"><i class="bi bi-cpu me-1"></i> Rekomendasi berdasarkan prioritas Anda.</div>
+                </div>
+                
+                <div class="mt-auto">
+                    <div class="featured-score-label">Skor TOPSIS Akhir</div>
+                    <div class="featured-score fs-2" style="{% if loop.index == 1 %}color: #2563EB;{% elif loop.index == 2 %}color: #475569;{% else %}color: #9A3412;{% endif %}">{{ "%.4f"|format(sp.topsis_score) }}</div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+    <div class="col-12 reveal">
+        <div class="card shadow-sm d-flex align-items-center justify-content-center p-5 text-muted" style="border: 2px dashed #CBD5E1; background: transparent;">
+            <i class="bi bi-inbox fs-1 mb-2" style="color: #94A3B8;"></i>
+            <p class="mb-0 fw-medium">Belum ada perhitungan yang dilakukan.</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Methodology Overview Section -->
+<div class="row mb-5 reveal">
+    <div class="col-12 mb-4">
+        <h4 class="fw-bold" style="color: #0F172A;">Metodologi Sistem Pendukung Keputusan</h4>
+        <p class="text-muted">How The Decision System Works</p>
+    </div>
+
+    <!-- AHP & TOPSIS Explanation Cards -->
+    <div class="col-md-6 mb-4">
+        <div class="insight-card p-4 h-100" style="position: relative; overflow: hidden;">
+            <div class="d-flex align-items-start mb-3">
+                <div class="insight-icon primary me-3" style="width: 56px; height: 56px; font-size: 1.75rem;">
+                    <i class="bi bi-diagram-3"></i>
+                </div>
+                <div>
+                    <div class="badge bg-primary bg-opacity-10 text-primary mb-2">Tahap 1</div>
+                    <h5 class="fw-bold mb-1" style="color: #1E293B;">AHP (Analytical Hierarchy Process)</h5>
+                </div>
+            </div>
+            <p class="text-muted mb-4" style="line-height: 1.6;">
+                AHP digunakan untuk menghitung prioritas setiap kriteria seperti Harga, Foto, Video, Chipset, Baterai, dan Storage berdasarkan preferensi pengguna melalui perbandingan berpasangan (pairwise comparison).
+            </p>
+            <div class="mt-auto p-3 bg-light rounded-3 d-flex align-items-center gap-3">
+                <i class="bi bi-bullseye fs-3 text-primary opacity-50"></i>
+                <div class="small fw-medium text-muted">Menentukan bobot atau tingkat kepentingan setiap kriteria.</div>
+            </div>
+            <!-- mini visual illustration (subtle circle) -->
+            <div class="position-absolute rounded-circle" style="width: 150px; height: 150px; background: radial-gradient(circle, rgba(37,99,235,0.05) 0%, rgba(37,99,235,0) 70%); bottom: -50px; right: -50px; pointer-events: none;"></div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="insight-card p-4 h-100" style="position: relative; overflow: hidden;">
+            <div class="d-flex align-items-start mb-3">
+                <div class="insight-icon success me-3" style="width: 56px; height: 56px; font-size: 1.75rem;">
+                    <i class="bi bi-sort-down-alt"></i>
+                </div>
+                <div>
+                    <div class="badge bg-success bg-opacity-10 text-success mb-2">Tahap 2</div>
+                    <h5 class="fw-bold mb-1" style="color: #1E293B;">TOPSIS</h5>
+                </div>
+            </div>
+            <p class="text-muted mb-4" style="line-height: 1.6;">
+                TOPSIS menentukan smartphone terbaik berdasarkan kedekatannya terhadap solusi ideal positif dan jaraknya terhadap solusi ideal negatif menggunakan bobot yang telah dihasilkan oleh AHP.
+            </p>
+            <div class="mt-auto p-3 bg-light rounded-3 d-flex align-items-center gap-3">
+                <i class="bi bi-bar-chart-steps fs-3 text-success opacity-50"></i>
+                <div class="small fw-medium text-muted">Melakukan perangkingan alternatif secara sistematis.</div>
+            </div>
+            <!-- mini visual illustration (subtle circle) -->
+            <div class="position-absolute rounded-circle" style="width: 150px; height: 150px; background: radial-gradient(circle, rgba(34,197,94,0.05) 0%, rgba(34,197,94,0) 70%); bottom: -50px; right: -50px; pointer-events: none;"></div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-5 reveal">
+    <!-- Educational Info Panel -->
+    <div class="col-12 mb-4">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="background: linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%);">
+            <div class="card-body p-4 d-flex align-items-center gap-4">
+                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width: 64px; height: 64px;">
+                    <i class="bi bi-lightbulb fs-2"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold mb-2" style="color: #1E293B;">Mengapa Menggunakan AHP + TOPSIS?</h5>
+                    <p class="mb-0 text-muted" style="line-height: 1.6;">
+                        AHP digunakan untuk menentukan bobot kriteria secara objektif berdasarkan preferensi pengguna, sedangkan TOPSIS digunakan untuk melakukan perangkingan alternatif sehingga menghasilkan rekomendasi smartphone terbaik secara sistematis.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- System Workflow Diagram -->
+    <div class="col-12">
+        <h5 class="fw-bold mb-5 text-center" style="color: #0F172A; font-size: 1.75rem;">System Workflow</h5>
+        
+        <div class="position-relative py-2 d-flex flex-column align-items-center w-100">
+            <!-- Connecting Vertical Line -->
+            <div class="position-absolute" style="width: 4px; background: #E2E8F0; top: 0; bottom: 0; left: 50%; transform: translateX(-50%); z-index: 0;"></div>
+            
+            <!-- Step 1 -->
+            <div class="workflow-step insight-card text-center z-1 p-4 mb-5 shadow-sm" style="width: 100%; max-width: 450px; border-radius: 16px; background: #fff;">
+                <div class="insight-icon bg-light mx-auto mb-3" style="color: #64748B; width: 64px; height: 64px; font-size: 2rem;"><i class="bi bi-phone"></i></div>
+                <h5 class="fw-bold mb-2">1. Data Smartphone</h5>
+                <div class="text-muted fs-6">Data alternatif yang akan dievaluasi</div>
+            </div>
+            
+            <!-- Container for Step 2 to 4 to attach the Loop -->
+            <div class="position-relative w-100 d-flex flex-column align-items-center">
+                <!-- Red Loop Arrow (Desktop) -->
+                <div class="position-absolute d-none d-lg-flex align-items-center" style="left: calc(50% + 245px); top: 50px; bottom: 50px; width: 100px; border-right: 4px dashed #ef4444; border-top: 4px dashed #ef4444; border-bottom: 4px dashed #ef4444; border-radius: 0 20px 20px 0; z-index: 0;">
+                    <div class="position-absolute bg-danger text-white fw-bold px-3 py-2 text-center shadow" style="top: 50%; right: -10px; transform: translate(100%, -50%); font-size: 0.9rem; border-radius: 8px; white-space: nowrap;">
+                        <i class="bi bi-arrow-clockwise me-1"></i> Jika CR > 0.1
+                    </div>
+                    <!-- CSS Triangle Arrow Head pointing left to Pairwise -->
+                    <div class="position-absolute" style="top: -8px; left: -14px; width: 0; height: 0; border-top: 10px solid transparent; border-bottom: 10px solid transparent; border-right: 16px solid #ef4444;"></div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="workflow-step insight-card text-center z-1 p-4 mb-5 shadow-sm" style="width: 100%; max-width: 450px; border-radius: 16px; background: #fff;">
+                    <div class="insight-icon bg-primary bg-opacity-10 mx-auto mb-3 text-primary" style="width: 64px; height: 64px; font-size: 2rem;"><i class="bi bi-scales"></i></div>
+                    <h5 class="fw-bold mb-2">2. Pairwise Comparison</h5>
+                    <div class="text-muted fs-6">Pengguna membandingkan tingkat kepentingan kriteria</div>
+                </div>
+                
+                <!-- Step 3 -->
+                <div class="workflow-step insight-card text-center z-1 p-4 mb-5 shadow-sm" style="width: 100%; max-width: 450px; border-radius: 16px; background: #fff;">
+                    <div class="insight-icon bg-primary bg-opacity-10 mx-auto mb-3 text-primary" style="width: 64px; height: 64px; font-size: 2rem;"><i class="bi bi-diagram-3"></i></div>
+                    <h5 class="fw-bold mb-2">3. AHP Weight</h5>
+                    <div class="text-muted fs-6">Sistem menghitung bobot prioritas masing-masing kriteria</div>
+                </div>
+                
+                <!-- Step 4 -->
+                <div class="workflow-step insight-card text-center z-1 p-4 mb-5 shadow-sm position-relative" style="width: 100%; max-width: 450px; border-radius: 16px; background: #fff;">
+                    <div class="insight-icon bg-info bg-opacity-10 mx-auto mb-3 text-info" style="width: 64px; height: 64px; font-size: 2rem;"><i class="bi bi-check2-all"></i></div>
+                    <h5 class="fw-bold mb-2">4. Consistency Check</h5>
+                    <div class="text-muted fs-6">Validasi konsistensi pengguna (Consistency Ratio)</div>
+                    
+                    <!-- Mobile Red Arrow (Visible only on small screens) -->
+                    <div class="d-block d-lg-none mt-4 p-3 bg-danger bg-opacity-10 border border-danger border-opacity-50 text-danger rounded-3 fw-bold shadow-sm">
+                        <i class="bi bi-arrow-90deg-up fs-5 d-block mb-1"></i>
+                        Jika CR > 0.1, kembali ke Tahap 2
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 5 -->
+            <div class="workflow-step insight-card text-center z-1 p-4 mb-5 shadow-sm" style="width: 100%; max-width: 450px; border-radius: 16px; background: #fff;">
+                <div class="insight-icon bg-success bg-opacity-10 mx-auto mb-3 text-success" style="width: 64px; height: 64px; font-size: 2rem;"><i class="bi bi-bar-chart-steps"></i></div>
+                <h5 class="fw-bold mb-2">5. TOPSIS Ranking</h5>
+                <div class="text-muted fs-6">Perhitungan nilai preferensi menggunakan matriks TOPSIS</div>
+            </div>
+            
+            <!-- Step 6 -->
+            <div class="workflow-step insight-card text-center z-1 p-4 shadow-lg" style="width: 100%; max-width: 450px; border-radius: 16px; border: 3px solid #F59E0B; background: #FEF3C7;">
+                <div class="insight-icon bg-white mx-auto mb-3 text-warning shadow-sm" style="width: 64px; height: 64px; font-size: 2rem;"><i class="bi bi-trophy-fill"></i></div>
+                <h5 class="fw-bold mb-2 text-dark fs-4">6. Recommendation</h5>
+                <div class="text-muted fs-6">Menampilkan hasil perangkingan smartphone terbaik</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

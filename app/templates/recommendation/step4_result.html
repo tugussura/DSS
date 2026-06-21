@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center reveal mb-4">
+    <div class="col-md-10 text-center">
+        <h2 class="fw-bold text-primary">Langkah 4: Hasil Rekomendasi (TOPSIS)</h2>
+        <p class="text-muted">Berdasarkan bobot kriteria AHP yang Anda tentukan, algoritma TOPSIS telah mengkalkulasi skor kedekatan relatif setiap smartphone terhadap solusi ideal untuk menghasilkan perankingan berikut.</p>
+        
+        <!-- Progress Steps -->
+        <div class="d-flex justify-content-center mt-4">
+            <div class="d-flex align-items-center">
+                <div class="rounded-circle bg-white text-primary shadow-sm border border-primary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-weight: 700; transition: 300ms;">1</div>
+                <div class="bg-primary opacity-50" style="height: 3px; width: 50px; margin: 0 8px; border-radius: 2px;"></div>
+                <div class="rounded-circle bg-white text-primary shadow-sm border border-primary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-weight: 700; transition: 300ms;">2</div>
+                <div class="bg-primary opacity-50" style="height: 3px; width: 50px; margin: 0 8px; border-radius: 2px;"></div>
+                <div class="rounded-circle bg-white text-primary shadow-sm border border-primary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-weight: 700; transition: 300ms;">3</div>
+                <div class="bg-primary" style="height: 3px; width: 50px; margin: 0 8px; border-radius: 2px;"></div>
+                <div class="rounded-circle bg-primary text-white shadow d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; font-weight: 800; transform: scale(1.05); transition: 300ms;">4</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Narasi Rekomendasi -->
+<div class="row mb-5 reveal" style="animation-delay: 0.1s;">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 24px; background: #FFFFFF; box-shadow: 0 10px 30px rgba(0,0,0,0.06);">
+            <div class="row g-0">
+                <!-- Top Recommendation Column -->
+                <div class="col-md-5 p-5 text-center d-flex flex-column justify-content-center border-end" style="border-color: #F1F5F9 !important;">
+                    <div class="mb-4">
+                        <span class="badge rounded-pill bg-warning bg-opacity-10 text-warning px-4 py-2 fw-bold border border-warning border-opacity-25 shadow-sm" style="font-size: 0.9rem; letter-spacing: 0.5px;">
+                            🥇 Rank #1
+                        </span>
+                    </div>
+                    <div class="text-muted fw-bold text-uppercase mb-2" style="font-size: 0.8rem; letter-spacing: 1px;">Top Recommendation</div>
+                    <h2 class="fw-bolder mb-4" style="color: #0F172A; font-weight: 800; font-size: 2.5rem; letter-spacing: -1px;">{{ top_smartphone.nama }}</h2>
+                    
+                    <div class="d-inline-flex flex-column align-items-center mx-auto" style="width: 100%; max-width: 250px;">
+                        <div class="d-flex justify-content-between w-100 mb-2">
+                            <span class="text-muted fw-semibold">Skor TOPSIS</span>
+                            <span class="fw-bolder text-primary fs-5 score-counter" data-target="{{ top_smartphone.topsis_score }}">0.0000</span>
+                        </div>
+                        <div class="progress w-100 rounded-pill shadow-sm" style="height: 8px; background-color: #EEF2FF;">
+                            <div class="progress-bar bg-primary rounded-pill progress-bar-animated progress-bar-striped" style="width: 0%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);" data-width="{{ (top_smartphone.topsis_score * 100) | int }}%"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Conclusion Column -->
+                <div class="col-md-7 p-5 d-flex flex-column justify-content-center" style="background: linear-gradient(to right bottom, #ffffff, #F8FAFC);">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                            <i class="bi bi-lightbulb-fill text-primary fs-4"></i>
+                        </div>
+                        <h4 class="fw-bold mb-0" style="color: #1E293B; font-weight: 700;">Kesimpulan Analisis</h4>
+                    </div>
+                    <p class="fs-5 mb-0 text-muted" style="line-height: 1.8; text-align: justify; font-weight: 400;">
+                        Berdasarkan profil prioritas kriteria yang Anda rancang melalui model AHP, dan kalkulasi jarak kedekatan relatif (TOPSIS), sistem menyimpulkan bahwa <strong class="text-primary fw-bold">{{ top_smartphone.nama }}</strong> adalah pilihan yang paling optimal untuk kebutuhan Content Creation Anda. Smartphone ini meraih skor kedekatan tertinggi yaitu <strong class="text-dark fw-bold">{{ "%.4f"|format(top_smartphone.topsis_score) }}</strong>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabel Ranking -->
+<div class="card border-0 shadow-sm reveal">
+    <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 fw-bold">Tabel Perangkingan Keseluruhan</h5>
+        <div>
+            <a href="{{ url_for('dss.analysis') }}" class="btn btn-outline-primary btn-sm me-2"><i class="bi bi-bar-chart-fill"></i> Lihat Analisis Visual</a>
+            <a href="{{ url_for('dss.calculation_details') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-calculator"></i> Detail Perhitungan</a>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="text-center" style="width: 10%;">Rank</th>
+                        <th style="width: 30%;">Nama Smartphone</th>
+                        <th>Harga (Rp)</th>
+                        <th>Foto</th>
+                        <th>Video</th>
+                        <th>Chipset</th>
+                        <th>Baterai</th>
+                        <th>Storage</th>
+                        <th class="text-center">Skor TOPSIS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sp in results %}
+                    <tr style="{% if loop.index == 1 %}background-color: rgba(217, 119, 6, 0.04);{% elif loop.index == 2 %}background-color: rgba(100, 116, 139, 0.04);{% elif loop.index == 3 %}background-color: rgba(194, 65, 12, 0.04);{% endif %}">
+                        <td class="text-center">
+                            {% if loop.index == 1 %}
+                                <span class="badge badge-rank-1 px-3 py-2 fs-6">#1</span>
+                            {% elif loop.index == 2 %}
+                                <span class="badge badge-rank-2 px-3 py-2 fs-6">#2</span>
+                            {% elif loop.index == 3 %}
+                                <span class="badge badge-rank-3 px-3 py-2 fs-6">#3</span>
+                            {% else %}
+                                <span class="fw-bold text-muted">{{ loop.index }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="fw-bold {% if loop.index == 1 %}rank-1{% elif loop.index == 2 %}rank-2{% elif loop.index == 3 %}rank-3{% endif %}">{{ sp.nama }}</td>
+                        <td>{{ "{:,.0f}".format(sp.harga).replace(',', '.') }}</td>
+                        <td>{{ sp.foto }}</td>
+                        <td>{{ sp.video }}</td>
+                        <td>{{ sp.chipset }}</td>
+                        <td>{{ sp.baterai }}</td>
+                        <td>{{ sp.storage }}</td>
+                        <td class="text-center fw-bold">{{ "%.4f"|format(sp.topsis_score) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts for Micro Interactions -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Counter Animation
+        const counters = document.querySelectorAll(".score-counter");
+        counters.forEach(counter => {
+            const target = +counter.getAttribute("data-target");
+            const duration = 800; // ms
+            const stepTime = Math.abs(Math.floor(duration / 60)); // 60fps
+            let current = 0;
+            const increment = target / (duration / stepTime);
+
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    counter.innerText = target.toFixed(4);
+                    clearInterval(timer);
+                } else {
+                    counter.innerText = current.toFixed(4);
+                }
+            }, stepTime);
+        });
+
+        // Progress Bar Animation
+        setTimeout(() => {
+            const bars = document.querySelectorAll(".progress-bar");
+            bars.forEach(bar => {
+                const targetWidth = bar.getAttribute("data-width");
+                if(targetWidth) {
+                    bar.style.width = targetWidth;
+                }
+            });
+        }, 100);
+    });
+</script>
+{% endblock %}

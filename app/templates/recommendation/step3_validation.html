@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center reveal mb-4">
+    <div class="col-md-10 text-center">
+        <h2 class="fw-bold text-primary">Langkah 3: Validasi Konsistensi (AHP)</h2>
+        <p class="text-muted">Mengevaluasi Consistency Ratio (CR) dari penilaian kriteria Anda. Jika CR kurang dari 0.1, penilaian dianggap konsisten dan Anda dapat melanjutkan ke proses perankingan.</p>
+        
+        <!-- Progress Steps -->
+        <div class="d-flex justify-content-center mt-4">
+            <div class="d-flex align-items-center">
+                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-weight: bold;">1</div>
+                <div class="bg-primary" style="height: 4px; width: 60px; margin: 0 10px;"></div>
+                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-weight: bold;">2</div>
+                <div class="bg-primary" style="height: 4px; width: 60px; margin: 0 10px;"></div>
+                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-weight: bold;">3</div>
+                <div class="bg-secondary opacity-25" style="height: 4px; width: 60px; margin: 0 10px;"></div>
+                <div class="rounded-circle bg-secondary bg-opacity-25 text-secondary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-weight: bold;">4</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center reveal">
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm text-center">
+            <div class="card-body p-5">
+                {% if ahp_result.is_consistent %}
+                    <div class="display-1 text-success mb-3"><i class="bi bi-check-circle-fill"></i></div>
+                    <h3 class="fw-bold text-success mb-3">✅ Penilaian Konsisten</h3>
+                    <div class="alert alert-success d-inline-block px-4">
+                        Consistency Ratio (CR): <strong>{{ "%.4f"|format(ahp_result.cr) }}</strong> <small>(< 0.1)</small>
+                    </div>
+                    <p class="text-muted mt-3 mb-4">Bobot prioritas kriteria yang Anda masukkan sudah konsisten secara matematis. Anda dapat melanjutkan ke tahap perhitungan akhir menggunakan metode TOPSIS.</p>
+                    
+                    <div class="mt-4 mb-4 text-start">
+                        <h5 class="fw-bold text-dark mb-3 text-center">Hasil Bobot Kriteria (Priority Vector)</h5>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm text-center align-middle shadow-sm">
+                                <thead class="table-light">
+                                    <tr>
+                                        {% for c in ahp_result.criteria %}
+                                        <th>{{ c }}</th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        {% for weight in ahp_result.priority_vector %}
+                                        <td class="fw-bold text-primary fs-5">
+                                            {{ "%.4f"|format(weight) }}<br>
+                                            <span style="font-size: 0.65em;" class="text-muted">{{ "%.2f"|format(weight * 100) }}%</span>
+                                        </td>
+                                        {% endfor %}
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="{{ url_for('dss.step2') }}" class="btn btn-outline-secondary btn-lg px-4"><i class="bi bi-arrow-left me-2"></i> Kembali</a>
+                        <a href="{{ url_for('dss.step4') }}" class="btn btn-primary btn-lg px-5">Lanjut ke TOPSIS <i class="bi bi-arrow-right ms-2"></i></a>
+                    </div>
+                {% else %}
+                    <div class="display-1 text-danger mb-3"><i class="bi bi-exclamation-triangle-fill"></i></div>
+                    <h3 class="fw-bold text-danger mb-3">⚠ Penilaian Tidak Konsisten</h3>
+                    <div class="alert alert-danger d-inline-block px-4">
+                        Consistency Ratio (CR): <strong>{{ "%.4f"|format(ahp_result.cr) }}</strong> <small>(>= 0.1)</small>
+                    </div>
+                    <p class="text-muted mt-3 mb-4">Nilai Consistency Ratio melebihi batas yang diizinkan (0.1). Silakan kembali ke langkah sebelumnya dan sesuaikan kembali nilai perbandingan antar kriteria Anda agar lebih logis dan konsisten.</p>
+                    <a href="{{ url_for('dss.step2') }}" class="btn btn-outline-danger btn-lg px-5"><i class="bi bi-arrow-left me-2"></i> Perbaiki Penilaian</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

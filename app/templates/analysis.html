@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 reveal">
+    <h2 class="fw-bold">Visualisasi</h2>
+    <a href="{{ url_for('dss.step4') }}" class="btn btn-outline-primary"><i class="bi bi-arrow-left"></i> Kembali ke Hasil</a>
+</div>
+
+{% set ns = namespace(max_w=0, max_idx=0) %}
+{% for w in weights %}
+    {% if w > ns.max_w %}
+        {% set ns.max_w = w %}
+        {% set ns.max_idx = loop.index0 %}
+    {% endif %}
+{% endfor %}
+
+<div class="alert alert-info border-0 shadow-sm mb-4 reveal d-flex align-items-center">
+    <i class="bi bi-lightbulb-fill fs-3 text-warning me-3"></i>
+    <div>
+        <h5 class="fw-bold mb-1">Interpretasi Hasil</h5>
+        <p class="mb-0">Berdasarkan preferensi yang diberikan, <strong>{{ criteria[ns.max_idx] }}</strong> menjadi kriteria paling dominan dengan bobot <strong>{{ "%.1f"|format(ns.max_w * 100) }}%</strong>.</p>
+    </div>
+</div>
+
+<div class="row reveal">
+    <div class="col-md-6 mb-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h5 class="fw-bold mb-0">Bobot Kriteria AHP</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="ahpPieChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h5 class="fw-bold mb-0">Distribusi Kriteria (Radar)</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="ahpRadarChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 mb-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h5 class="fw-bold mb-0">Ranking Skor TOPSIS</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="topsisBarChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const criteriaLabels = {{ criteria | tojson }};
+    const ahpWeights = {{ weights | tojson }};
+    const topsisNames = {{ results | map(attribute='nama') | list | tojson }};
+    const topsisScores = {{ results | map(attribute='topsis_score') | list | tojson }};
+    
+    const colors = [
+        'rgba(37, 99, 235, 0.8)',   // Primary Blue
+        'rgba(34, 197, 94, 0.8)',   // Success Green
+        'rgba(245, 158, 11, 0.8)',  // Warning Yellow
+        'rgba(239, 68, 68, 0.8)',   // Danger Red
+        'rgba(168, 85, 247, 0.8)',  // Purple
+        'rgba(14, 165, 233, 0.8)'   // Light Blue
+    ];
+
+    // 1. Pie Chart Bobot AHP
+    const ctxPie = document.getElementById('ahpPieChart').getContext('2d');
+    new Chart(ctxPie, {
+        type: 'pie',
+        data: {
+            labels: criteriaLabels,
+            datasets: [{
+                data: ahpWeights,
+                backgroundColor: colors,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let val = context.raw * 100;
+                            return ' ' + context.label + ': ' + val.toFixed(2) + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // 2. Radar Chart AHP
+    const ctxRadar = document.getElementById('ahpRadarChart').getContext('2d');
+    new Chart(ctxRadar, {
+        type: 'radar',
+        data: {
+            labels: criteriaLabels,
+            datasets: [{
+                label: 'Bobot Prioritas',
+                data: ahpWeights,
+                backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                borderColor: 'rgba(37, 99, 235, 1)',
+                pointBackgroundColor: 'rgba(37, 99, 235, 1)',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                r: {
+                    beginAtZero: true,
+                    ticks: { display: false }
+                }
+            }
+        }
+    });
+
+    // 3. Bar Chart TOPSIS
+    const ctxBar = document.getElementById('topsisBarChart').getContext('2d');
+    
+    // Top 3 distinct colors, others gray
+    const barColors = topsisScores.map((score, index) => {
+        if(index === 0) return 'rgba(245, 158, 11, 0.9)'; // Gold
+        if(index === 1) return 'rgba(148, 163, 184, 0.9)'; // Silver
+        if(index === 2) return 'rgba(180, 83, 9, 0.9)'; // Bronze
+        return 'rgba(37, 99, 235, 0.6)'; // Default blue
+    });
+
+    new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+            labels: topsisNames,
+            datasets: [{
+                label: 'Skor TOPSIS',
+                data: topsisScores,
+                backgroundColor: barColors,
+                borderRadius: 4,
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: { display: true, text: 'Skor Kedekatan Relatif (C*)' }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

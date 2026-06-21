@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center reveal">
+    <div class="col-md-8 text-center mb-5">
+        <h2 class="fw-bold text-primary">Langkah 1: Pilih Profil Creator</h2>
+        <p class="text-muted">Pilih profil yang paling sesuai dengan gaya pembuatan konten Anda. Profil ini akan membantu sistem untuk memberikan rekomendasi prioritas kriteria awal, yang nantinya tetap dapat Anda sesuaikan.</p>
+        
+        <!-- Progress Steps -->
+        <div class="d-flex justify-content-center mt-4">
+            <div class="d-flex align-items-center">
+                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-weight: bold;">1</div>
+                <div class="bg-secondary opacity-25" style="height: 4px; width: 60px; margin: 0 10px;"></div>
+                <div class="rounded-circle bg-secondary bg-opacity-25 text-secondary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-weight: bold;">2</div>
+                <div class="bg-secondary opacity-25" style="height: 4px; width: 60px; margin: 0 10px;"></div>
+                <div class="rounded-circle bg-secondary bg-opacity-25 text-secondary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-weight: bold;">3</div>
+                <div class="bg-secondary opacity-25" style="height: 4px; width: 60px; margin: 0 10px;"></div>
+                <div class="rounded-circle bg-secondary bg-opacity-25 text-secondary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-weight: bold;">4</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form method="POST" class="reveal">
+    <div class="row g-4 justify-content-center">
+        <!-- TikTok Creator -->
+        <div class="col-md-4">
+            <label class="w-100" style="cursor: pointer;">
+                <input type="radio" name="profile" value="tiktok" class="d-none peer" required>
+                <div class="card h-100 border-2 border-transparent peer-checked-border">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-tiktok fs-1 text-primary mb-3 d-block"></i>
+                        <h5 class="fw-bold">TikTok Creator</h5>
+                        <p class="small text-muted mb-0">Prioritas pada kualitas foto, video, dan chipset untuk konten vertikal.</p>
+                    </div>
+                </div>
+            </label>
+        </div>
+        
+        <!-- YouTube Creator -->
+        <div class="col-md-4">
+            <label class="w-100" style="cursor: pointer;">
+                <input type="radio" name="profile" value="youtube" class="d-none peer">
+                <div class="card h-100 border-2 border-transparent peer-checked-border">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-youtube fs-1 text-danger mb-3 d-block"></i>
+                        <h5 class="fw-bold">YouTube Creator</h5>
+                        <p class="small text-muted mb-0">Fokus utama pada perekaman video durasi panjang dan kapasitas penyimpanan besar.</p>
+                    </div>
+                </div>
+            </label>
+        </div>
+
+        <!-- Mobile Filmmaker -->
+        <div class="col-md-4">
+            <label class="w-100" style="cursor: pointer;">
+                <input type="radio" name="profile" value="mobile_film" class="d-none peer">
+                <div class="card h-100 border-2 border-transparent peer-checked-border">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-camera-reels fs-1 text-dark mb-3 d-block"></i>
+                        <h5 class="fw-bold">Mobile Filmmaker</h5>
+                        <p class="small text-muted mb-0">Video dan kamera mutlak paling penting, harga bukan masalah (flagship only).</p>
+                    </div>
+                </div>
+            </label>
+        </div>
+
+        <!-- Budget Creator -->
+        <div class="col-md-4">
+            <label class="w-100" style="cursor: pointer;">
+                <input type="radio" name="profile" value="budget" class="d-none peer">
+                <div class="card h-100 border-2 border-transparent peer-checked-border">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-wallet2 fs-1 text-success mb-3 d-block"></i>
+                        <h5 class="fw-bold">Budget Creator</h5>
+                        <p class="small text-muted mb-0">Mencari value-for-money terbaik, harga adalah prioritas utama.</p>
+                    </div>
+                </div>
+            </label>
+        </div>
+
+        <!-- Custom -->
+        <div class="col-md-4">
+            <label class="w-100" style="cursor: pointer;">
+                <input type="radio" name="profile" value="custom" class="d-none peer" checked>
+                <div class="card h-100 border-2 border-transparent peer-checked-border">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-sliders fs-1 text-warning mb-3 d-block"></i>
+                        <h5 class="fw-bold">Custom Profile</h5>
+                        <p class="small text-muted mb-0">Atur semua nilai perbandingan kriteria sendiri dari awal (default).</p>
+                    </div>
+                </div>
+            </label>
+        </div>
+    </div>
+    
+    <div class="text-center mt-5">
+        <button type="submit" class="btn btn-primary btn-lg px-5 shadow-sm">Lanjut ke Pairwise Comparison <i class="bi bi-arrow-right ms-2"></i></button>
+    </div>
+</form>
+
+<style>
+    .peer:checked + .peer-checked-border {
+        border-color: var(--primary-color) !important;
+        background-color: rgba(37, 99, 235, 0.05);
+        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+    }
+    .card.peer-checked-border {
+        border-color: #e2e8f0;
+    }
+</style>
+{% endblock %}

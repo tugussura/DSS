@@ -1,0 +1,538 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section mb-5 reveal rounded-4 shadow-sm" style="background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); padding: 4rem 3rem; color: white; position: relative; overflow: hidden;">
+
+    <div class="row align-items-center position-relative z-1">
+        <div class="col-lg-8">
+            <a href="{{ url_for('dss.step4') }}" class="btn btn-outline-light btn-sm mb-4" style="border-radius: 8px;"><i class="bi bi-arrow-left me-2"></i> Kembali ke Hasil</a>
+            <h1 class="fw-bolder mb-3" style="letter-spacing: -1px; font-size: 2.5rem;">Detail Perhitungan AHP-TOPSIS</h1>
+            <p class="fs-5 text-white-50 mb-0" style="max-width: 600px; line-height: 1.6;">
+                Transparansi proses pengambilan keputusan smartphone menggunakan metode Analytical Hierarchy Process (AHP) dan TOPSIS.
+            </p>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- ========================================== -->
+<!-- AHP SECTION -->
+<!-- ========================================== -->
+<div class="d-flex align-items-center mb-4 mt-5 reveal">
+    <div class="bg-primary rounded" style="width: 6px; height: 32px; margin-right: 12px;"></div>
+    <h3 class="fw-bolder mb-0" style="color: #0F172A;">AHP Analysis <span class="text-muted fw-normal fs-5 ms-2">| Penentuan Bobot Kriteria</span></h3>
+</div>
+
+
+
+<!-- AHP Steps -->
+<div class="row g-4 mb-5">
+    <!-- Step 1 -->
+    <div class="col-12 reveal">
+        <div class="card border-0 shadow-sm" style="border-radius: 20px;">
+            <div class="card-header bg-white border-bottom p-4">
+                <div class="d-flex align-items-center">
+                    <div class="badge bg-primary rounded-pill px-3 py-2 me-3 fs-6">STEP 1</div>
+                    <h5 class="fw-bold mb-0 text-dark">Pairwise Comparison</h5>
+                </div>
+                <p class="text-muted mt-2 mb-2 small">Menentukan tingkat kepentingan antar kriteria menggunakan skala Saaty.</p>
+                <div class="d-inline-block bg-light rounded px-2 py-1 border"><code class="text-dark small">Rumus: A = [a_ij] di mana a_ji = 1 / a_ij</code></div>
+            </div>
+            <div class="card-body p-4 p-md-5">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-sm text-center align-middle mb-0" style="border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                        <thead style="background-color: #F8FAFC;">
+                            <tr>
+                                <th class="py-3 px-4 text-muted">Kriteria</th>
+                                {% for c in criteria %}<th class="py-3 px-4">{{ c }}</th>{% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in range(criteria|length) %}
+                            <tr>
+                                <th class="text-start py-3 px-4" style="background-color: #F8FAFC; color: #475569;">{{ criteria[i] }}</th>
+                                {% for j in range(criteria|length) %}
+                                <td class="py-3">{{ "%.3f"|format(ahp.matrix[i][j]) }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                            <tr class="fw-bold" style="background-color: #EFF6FF; color: #1E3A8A;">
+                                <th class="text-start py-3 px-4">Jumlah Kolom</th>
+                                {% for sum in ahp.col_sums %}
+                                <td class="py-3">{{ "%.3f"|format(sum) }}</td>
+                                {% endfor %}
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="col-12 reveal">
+        <div class="card border-0 shadow-sm" style="border-radius: 20px;">
+            <div class="card-header bg-white border-bottom p-4">
+                <div class="d-flex align-items-center">
+                    <div class="badge bg-primary rounded-pill px-3 py-2 me-3 fs-6">STEP 2</div>
+                    <h5 class="fw-bold mb-0 text-dark">Normalisasi Matriks</h5>
+                </div>
+                <p class="text-muted mt-2 mb-2 small">Mengubah matriks menjadi bentuk proporsional.</p>
+                <div class="d-inline-block bg-light rounded px-2 py-1 border"><code class="text-dark small">Rumus: a'_ij = a_ij / Σ(a_kj)</code></div>
+            </div>
+            <div class="card-body p-4 p-md-5">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-sm text-center align-middle mb-0" style="border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                        <thead style="background-color: #F8FAFC;">
+                            <tr>
+                                <th class="py-3 px-4 text-muted">Kriteria</th>
+                                {% for c in criteria %}<th class="py-3 px-4">{{ c }}</th>{% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in range(criteria|length) %}
+                            <tr>
+                                <th class="text-start py-3 px-4" style="background-color: #F8FAFC; color: #475569;">{{ criteria[i] }}</th>
+                                {% for j in range(criteria|length) %}
+                                <td class="py-3">{{ "%.4f"|format(ahp.normalized_matrix[i][j]) }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                            <tr class="fw-bold" style="background-color: #EFF6FF; color: #1E3A8A;">
+                                <th class="text-center py-3 px-4 fw-bolder">TOTAL</th>
+                                {% for j in range(criteria|length) %}
+                                    {% set ns = namespace(col_sum=0) %}
+                                    {% for i in range(criteria|length) %}
+                                        {% set ns.col_sum = ns.col_sum + ahp.normalized_matrix[i][j] %}
+                                    {% endfor %}
+                                    <td class="py-3">{{ "%.4f"|format(ns.col_sum) }}</td>
+                                {% endfor %}
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="col-12 reveal">
+        <div class="card border-0 shadow-sm" style="border-radius: 20px;">
+            <div class="card-header bg-white border-bottom p-4">
+                <div class="d-flex align-items-center">
+                    <div class="badge bg-primary rounded-pill px-3 py-2 me-3 fs-6">STEP 3</div>
+                    <h5 class="fw-bold mb-0 text-dark">Bobot Prioritas</h5>
+                </div>
+                <p class="text-muted mt-2 mb-2 small">Menghasilkan bobot akhir masing-masing kriteria.</p>
+                <div class="d-inline-block bg-light rounded px-2 py-1 border"><code class="text-dark small">Rumus: W_i = Σ(a'_ij) / n</code></div>
+            </div>
+            <div class="card-body p-4 p-md-5">
+                <div class="row">
+                    <div class="col-md-5 border-end-md mb-4 mb-md-0 pe-md-4">
+                        <h6 class="fw-bold text-dark mb-4">Visualisasi Bobot</h6>
+                        {% set sorted_criteria = [] %}
+                        {% for i in range(criteria|length) %}
+                            {% set _ = sorted_criteria.append({'name': criteria[i], 'weight': ahp.priority_vector[i]}) %}
+                        {% endfor %}
+                        {% for item in sorted_criteria|sort(attribute='weight', reverse=True) %}
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="fw-semibold text-secondary small">{{ item.name }}</span>
+                                <span class="fw-bold text-primary small">{{ "%.2f"|format(item.weight * 100) }}%</span>
+                            </div>
+                            <div class="progress" style="height: 8px; border-radius: 4px; background-color: #F1F5F9;">
+                                <div class="progress-bar bg-primary" role="progressbar" style="width: {{ item.weight * 100 }}%; border-radius: 4px;"></div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="col-md-7 ps-md-4">
+                        <h6 class="fw-bold text-dark mb-4">Tabel Vektor Prioritas</h6>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover table-sm text-center align-middle mb-0" style="border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                                <thead style="background-color: #F8FAFC;">
+                                    <tr>
+                                        <th class="py-3 px-4 text-muted">Kriteria</th>
+                                        <th class="py-3 px-4 text-primary bg-primary bg-opacity-10">Vektor Prioritas (Bobot)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for i in range(criteria|length) %}
+                                    <tr>
+                                        <th class="text-start py-3 px-4" style="background-color: #F8FAFC; color: #475569;">{{ criteria[i] }}</th>
+                                        <td class="py-3 fw-bold text-primary">{{ "%.4f"|format(ahp.priority_vector[i]) }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="col-12 reveal">
+        <div class="card border-0 shadow-sm" style="border-radius: 20px;">
+            <div class="card-header bg-white border-bottom p-4">
+                <div class="d-flex align-items-center">
+                    <div class="badge bg-primary rounded-pill px-3 py-2 me-3 fs-6">STEP 4</div>
+                    <h5 class="fw-bold mb-0 text-dark">Uji Konsistensi</h5>
+                </div>
+                <p class="text-muted mt-2 mb-2 small">Validasi konsistensi perhitungan matriks AHP secara bertahap.</p>
+                <div class="d-inline-block bg-light rounded px-2 py-1 border"><code class="text-dark small">Tujuan: Mengetahui validitas konsistensi penilaian</code></div>
+            </div>
+            <div class="card-body p-4 p-md-5">
+                {% set n = criteria|length %}
+                {% set ri_dict = {1: 0, 2: 0, 3: 0.58, 4: 0.90, 5: 1.12, 6: 1.24, 7: 1.32, 8: 1.41, 9: 1.45, 10: 1.49} %}
+                {% set ri = ri_dict[n] %}
+                
+                <div class="mb-4">
+                    <div class="row align-items-center mb-3">
+                        <div class="col-md-3 text-muted fw-semibold">Jumlah Kriteria (n)</div>
+                        <div class="col-md-9 fs-5 text-dark fw-bold"><i class="bi bi-arrow-right text-muted me-2"></i>{{ n }}</div>
+                    </div>
+                    
+                    <div class="row align-items-center mb-3">
+                        <div class="col-md-3 text-muted fw-semibold">Eigen Value (λmax)</div>
+                        <div class="col-md-9">
+                            <div class="fs-5 text-dark fw-bold"><i class="bi bi-arrow-right text-muted me-2"></i>{{ "%.4f"|format(ahp.eigen_value) }}</div>
+                            <div class="text-muted small ms-4">Nilai Eigen Value Maksimum hasil perkalian matriks dengan vektor prioritas.</div>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-start mb-3">
+                        <div class="col-md-3 text-muted fw-semibold pt-2">Consistency Index (CI)</div>
+                        <div class="col-md-9">
+                            <div class="bg-light rounded p-3 border font-monospace text-dark mb-2">
+                                <div>CI = (λmax - n) / (n - 1)</div>
+                                <div>CI = ({{ "%.4f"|format(ahp.eigen_value) }} - {{ n }}) / ({{ n }} - 1)</div>
+                                <div class="fw-bold text-primary mt-1">CI = {{ "%.4f"|format(ahp.ci) }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center mb-3">
+                        <div class="col-md-3 text-muted fw-semibold">Random Index (RI)</div>
+                        <div class="col-md-9">
+                            <div class="fs-5 text-dark fw-bold"><i class="bi bi-arrow-right text-muted me-2"></i>{{ ri }}</div>
+                            <div class="text-muted small ms-4">Nilai Random Index (Saaty) untuk n = {{ n }}</div>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-start mb-4">
+                        <div class="col-md-3 text-muted fw-semibold pt-2">Consistency Ratio (CR)</div>
+                        <div class="col-md-9">
+                            <div class="bg-light rounded p-3 border font-monospace text-dark mb-2">
+                                <div>CR = CI / RI</div>
+                                <div>CR = {{ "%.4f"|format(ahp.ci) }} / {{ ri }}</div>
+                                <div class="fw-bold text-primary mt-1">CR = {{ "%.4f"|format(ahp.cr) }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conclusion Panel -->
+                {% if ahp.cr < 0.1 %}
+                <div class="p-4 rounded-4 bg-success bg-opacity-10 border border-success border-opacity-25 d-flex align-items-start">
+                    <i class="bi bi-check-circle-fill text-success fs-3 me-3 mt-1"></i>
+                    <div>
+                        <h5 class="fw-bold text-success mb-2">Konsisten</h5>
+                        <p class="text-dark mb-0 font-monospace fw-semibold">CR = {{ "%.4f"|format(ahp.cr) }} < 0.10</p>
+                        <p class="text-muted small mt-1 mb-0">Matriks perbandingan berpasangan dinyatakan konsisten dan dapat digunakan pada tahap TOPSIS.</p>
+                    </div>
+                </div>
+                {% else %}
+                <div class="p-4 rounded-4 bg-danger bg-opacity-10 border border-danger border-opacity-25 d-flex align-items-start">
+                    <i class="bi bi-x-circle-fill text-danger fs-3 me-3 mt-1"></i>
+                    <div>
+                        <h5 class="fw-bold text-danger mb-2">Tidak Konsisten</h5>
+                        <p class="text-dark mb-0 font-monospace fw-semibold">CR = {{ "%.4f"|format(ahp.cr) }} &ge; 0.10</p>
+                        <p class="text-muted small mt-1 mb-0">Penilaian perlu diperbaiki karena tingkat konsistensi belum memenuhi standar AHP.</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- TOPSIS SECTION -->
+<!-- ========================================== -->
+<div class="d-flex align-items-center mb-4 mt-5 reveal">
+    <div class="bg-info rounded" style="width: 6px; height: 32px; margin-right: 12px;"></div>
+    <h3 class="fw-bolder mb-0" style="color: #0F172A;">TOPSIS Analysis <span class="text-muted fw-normal fs-5 ms-2">| Perankingan Alternatif</span></h3>
+</div>
+
+
+
+<!-- TOPSIS Steps -->
+<div class="row g-4 mb-5">
+    <!-- Step 1 -->
+    <div class="col-12 reveal">
+        <div class="card border-0 shadow-sm" style="border-radius: 20px;">
+            <div class="card-header bg-white border-bottom p-4">
+                <div class="d-flex align-items-center">
+                    <div class="badge bg-info rounded-pill px-3 py-2 me-3 fs-6">STEP 1</div>
+                    <h5 class="fw-bold mb-0 text-dark">Matriks Keputusan</h5>
+                </div>
+                <p class="text-muted mt-2 mb-2 small">Pembentukan matriks berdasarkan data kuantitatif asli dari setiap alternatif smartphone.</p>
+                <div class="d-inline-block bg-light rounded px-2 py-1 border"><code class="text-dark small">Rumus: X = [x_ij]</code></div>
+            </div>
+            <div class="card-body p-4 p-md-5">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-sm text-center align-middle mb-0" style="border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                        <thead style="background-color: #F8FAFC;">
+                            <tr>
+                                <th class="py-3 px-4 text-muted text-start">Alternatif</th>
+                                {% for c in criteria %}<th class="py-3 px-4">{{ c }}</th>{% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in range(topsis.decision_matrix|length) %}
+                            <tr>
+                                <th class="text-start py-3 px-4" style="background-color: #F8FAFC; color: #475569;">{{ smartphones[i] }}</th>
+                                {% for j in range(criteria|length) %}
+                                <td class="py-3">{{ "%.2f"|format(topsis.decision_matrix[i][j]) }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="col-12 reveal">
+        <div class="card border-0 shadow-sm" style="border-radius: 20px;">
+            <div class="card-header bg-white border-bottom p-4">
+                <div class="d-flex align-items-center">
+                    <div class="badge bg-info rounded-pill px-3 py-2 me-3 fs-6">STEP 2</div>
+                    <h5 class="fw-bold mb-0 text-dark">Normalisasi Matriks</h5>
+                </div>
+                <p class="text-muted mt-2 mb-2 small">Menormalisasi setiap elemen dengan akar kuadrat jumlah kuadrat kolomnya.</p>
+                <div class="d-inline-block bg-light rounded px-2 py-1 border"><code class="text-dark small">Rumus: r_ij = x_ij / √(Σ x_ij²)</code></div>
+            </div>
+            <div class="card-body p-4 p-md-5">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-sm text-center align-middle mb-0" style="border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                        <thead style="background-color: #F8FAFC;">
+                            <tr>
+                                <th class="py-3 px-4 text-muted text-start">Alternatif</th>
+                                {% for c in criteria %}<th class="py-3 px-4">{{ c }}</th>{% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in range(topsis.normalized_matrix|length) %}
+                            <tr>
+                                <th class="text-start py-3 px-4" style="background-color: #F8FAFC; color: #475569;">{{ smartphones[i] }}</th>
+                                {% for j in range(criteria|length) %}
+                                <td class="py-3">{{ "%.4f"|format(topsis.normalized_matrix[i][j]) }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="col-12 reveal">
+        <div class="card border-0 shadow-sm" style="border-radius: 20px;">
+            <div class="card-header bg-white border-bottom p-4">
+                <div class="d-flex align-items-center">
+                    <div class="badge bg-info rounded-pill px-3 py-2 me-3 fs-6">STEP 3</div>
+                    <h5 class="fw-bold mb-0 text-dark">Matriks Terbobot</h5>
+                </div>
+                <p class="text-muted mt-2 mb-2 small">Mikalikan matriks normalisasi dengan bobot kriteria AHP.</p>
+                <div class="d-inline-block bg-light rounded px-2 py-1 border"><code class="text-dark small">Rumus: y_ij = r_ij × W_j</code></div>
+            </div>
+            <div class="card-body p-4 p-md-5">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-sm text-center align-middle mb-0" style="border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                        <thead style="background-color: #F8FAFC;">
+                            <tr>
+                                <th class="py-3 px-4 text-muted text-start">Alternatif</th>
+                                {% for c in criteria %}<th class="py-3 px-4">{{ c }}</th>{% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in range(topsis.weighted_matrix|length) %}
+                            <tr>
+                                <th class="text-start py-3 px-4" style="background-color: #F8FAFC; color: #475569;">{{ smartphones[i] }}</th>
+                                {% for j in range(criteria|length) %}
+                                <td class="py-3">{{ "%.4f"|format(topsis.weighted_matrix[i][j]) }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="col-12 reveal">
+        <div class="card border-0 shadow-sm" style="border-radius: 20px;">
+            <div class="card-header bg-white border-bottom p-4">
+                <div class="d-flex align-items-center">
+                    <div class="badge bg-info rounded-pill px-3 py-2 me-3 fs-6">STEP 4</div>
+                    <h5 class="fw-bold mb-0 text-dark">Solusi Ideal Positif & Negatif</h5>
+                </div>
+                <p class="text-muted mt-2 mb-2 small">Mencari nilai terbaik (A+) dan terburuk (A-) untuk setiap kriteria.</p>
+                <div class="d-inline-block bg-light rounded px-2 py-1 border"><code class="text-dark small">Rumus A+: Max(y) Benefit / Min(y) Cost | Rumus A-: Min(y) Benefit / Max(y) Cost</code></div>
+            </div>
+            <div class="card-body p-4 p-md-5">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-sm text-center align-middle mb-0" style="border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                        <thead style="background-color: #F8FAFC;">
+                            <tr>
+                                <th class="py-3 px-4 text-muted text-start">Tipe Ideal</th>
+                                {% for c in criteria %}<th class="py-3 px-4">{{ c }}</th>{% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th class="text-start py-3 px-4 bg-success bg-opacity-10 text-success">Solusi Positif (A+)</th>
+                                {% for val in topsis.a_plus %}
+                                <td class="py-3 fw-bold text-success">{{ "%.4f"|format(val) }}</td>
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <th class="text-start py-3 px-4 bg-danger bg-opacity-10 text-danger">Solusi Negatif (A-)</th>
+                                {% for val in topsis.a_minus %}
+                                <td class="py-3 fw-bold text-danger">{{ "%.4f"|format(val) }}</td>
+                                {% endfor %}
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 5 & 6 -->
+    <div class="col-12 reveal">
+        <div class="card border-0 shadow-sm" style="border-radius: 20px;">
+            <div class="card-header bg-white border-bottom p-4">
+                <div class="d-flex align-items-center">
+                    <div class="badge bg-info rounded-pill px-3 py-2 me-3 fs-6">STEP 5 & 6</div>
+                    <h5 class="fw-bold mb-0 text-dark">Separation Measure & Nilai Preferensi</h5>
+                </div>
+                <p class="text-muted mt-2 mb-2 small">Mengukur jarak ke solusi ideal (D+, D-) dan menghitung kedekatan relatif (V).</p>
+                <div class="d-inline-block bg-light rounded px-2 py-1 border"><code class="text-dark small">Rumus D: √(Σ (y_ij - y_j)²) | Rumus V: D-_i / (D+_i + D-_i)</code></div>
+            </div>
+            <div class="card-body p-4 p-md-5">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-sm text-center align-middle mb-0" style="border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                        <thead style="background-color: #F8FAFC;">
+                            <tr>
+                                <th class="py-3 px-4 text-muted text-start">Alternatif</th>
+                                <th class="py-3 px-4 text-muted">Jarak Positif (D+)</th>
+                                <th class="py-3 px-4 text-muted">Jarak Negatif (D-)</th>
+                                <th class="py-3 px-4 bg-info bg-opacity-10 text-info">Nilai Preferensi (Skor Akhir)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in range(topsis.d_plus|length) %}
+                            <tr>
+                                <th class="text-start py-3 px-4" style="background-color: #F8FAFC; color: #475569;">{{ smartphones[i] }}</th>
+                                <td class="py-3">{{ "%.4f"|format(topsis.d_plus[i]) }}</td>
+                                <td class="py-3">{{ "%.4f"|format(topsis.d_minus[i]) }}</td>
+                                <td class="py-3 fw-bolder text-info fs-5">{{ "%.4f"|format(topsis.c_score[i]) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- FINAL RANKING SECTION -->
+<!-- ========================================== -->
+<div class="d-flex align-items-center mb-4 mt-5 reveal">
+    <div class="bg-warning rounded" style="width: 6px; height: 32px; margin-right: 12px;"></div>
+    <h3 class="fw-bolder mb-0" style="color: #0F172A;">Top 3 Recommendations</h3>
+</div>
+
+<div class="row g-4 mb-5 reveal">
+    <!-- Rank 1 -->
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100 text-center" style="border-radius: 20px; background: linear-gradient(180deg, #FFFBEB 0%, #FFFFFF 100%);">
+            <div class="card-body p-5 d-flex flex-column align-items-center">
+                <div class="mb-4">
+                    <span class="badge rounded-pill bg-warning text-white px-4 py-2 fw-bold shadow-sm" style="font-size: 1rem;">
+                        <i class="bi bi-trophy-fill me-1"></i> BEST CHOICE #1
+                    </span>
+                </div>
+                <h3 class="fw-bolder mb-2 text-dark">{{ topsis.results[0].nama }}</h3>
+                <div class="text-muted small mb-4">Smartphone Rekomendasi Utama</div>
+                
+                <div class="mt-auto w-100">
+                    <div class="p-3 bg-white rounded-3 shadow-sm border border-warning border-opacity-25">
+                        <div class="text-warning small fw-bold text-uppercase mb-1">Skor TOPSIS</div>
+                        <div class="fs-2 fw-bolder text-dark">{{ "%.4f"|format(topsis.results[0].topsis_score) }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Rank 2 -->
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100 text-center" style="border-radius: 20px; background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%);">
+            <div class="card-body p-5 d-flex flex-column align-items-center">
+                <div class="mb-4">
+                    <span class="badge rounded-pill bg-secondary bg-opacity-10 text-secondary px-4 py-2 fw-bold border border-secondary border-opacity-25" style="font-size: 0.9rem;">
+                        Rank #2
+                    </span>
+                </div>
+                <h4 class="fw-bolder mb-2 text-dark">{{ topsis.results[1].nama }}</h4>
+                <div class="text-muted small mb-4">Alternatif Pilihan Kedua</div>
+                
+                <div class="mt-auto w-100">
+                    <div class="p-3 bg-white rounded-3 border border-light">
+                        <div class="text-secondary small fw-bold text-uppercase mb-1">Skor TOPSIS</div>
+                        <div class="fs-3 fw-bolder text-dark">{{ "%.4f"|format(topsis.results[1].topsis_score) }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Rank 3 -->
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100 text-center" style="border-radius: 20px; background: linear-gradient(180deg, #FFF6F5 0%, #FFFFFF 100%);">
+            <div class="card-body p-5 d-flex flex-column align-items-center">
+                <div class="mb-4">
+                    <span class="badge rounded-pill bg-danger bg-opacity-10 text-danger px-4 py-2 fw-bold border border-danger border-opacity-25" style="font-size: 0.9rem;">
+                        Rank #3
+                    </span>
+                </div>
+                <h4 class="fw-bolder mb-2 text-dark">{{ topsis.results[2].nama }}</h4>
+                <div class="text-muted small mb-4">Alternatif Pilihan Ketiga</div>
+                
+                <div class="mt-auto w-100">
+                    <div class="p-3 bg-white rounded-3 border border-light">
+                        <div class="text-danger small fw-bold text-uppercase mb-1">Skor TOPSIS</div>
+                        <div class="fs-3 fw-bolder text-dark">{{ "%.4f"|format(topsis.results[2].topsis_score) }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
