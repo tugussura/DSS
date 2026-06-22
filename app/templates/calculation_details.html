@@ -89,6 +89,7 @@
                             <tr>
                                 <th class="py-3 px-4 text-muted">Kriteria</th>
                                 {% for c in criteria %}<th class="py-3 px-4">{{ c }}</th>{% endfor %}
+                                <th class="py-3 px-4 text-primary bg-primary bg-opacity-10">Jumlah</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -98,6 +99,7 @@
                                 {% for j in range(criteria|length) %}
                                 <td class="py-3">{{ "%.4f"|format(ahp.normalized_matrix[i][j]) }}</td>
                                 {% endfor %}
+                                <td class="py-3 fw-bold text-primary">{{ "%.4f"|format(ahp.normalized_matrix[i]|sum) }}</td>
                             </tr>
                             {% endfor %}
                             <tr class="fw-bold" style="background-color: #EFF6FF; color: #1E3A8A;">
@@ -109,6 +111,7 @@
                                     {% endfor %}
                                     <td class="py-3">{{ "%.4f"|format(ns.col_sum) }}</td>
                                 {% endfor %}
+                                <td class="py-3">{{ "%.4f"|format(criteria|length) }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -126,7 +129,8 @@
                     <h5 class="fw-bold mb-0 text-dark">Bobot Prioritas</h5>
                 </div>
                 <p class="text-muted mt-2 mb-2 small">Menghasilkan bobot akhir masing-masing kriteria.</p>
-                <div class="d-inline-block bg-light rounded px-2 py-1 border"><code class="text-dark small">Rumus: W_i = Σ(a'_ij) / n</code></div>
+                <div class="d-inline-block bg-light rounded px-2 py-1 border me-2 mb-2"><code class="text-dark small">Rumus W_i = Σ(a'_ij) / n</code></div>
+                <div class="d-inline-block bg-light rounded px-2 py-1 border mb-2"><code class="text-dark small">Rumus EV_i = W_i × Σ(a_kj)</code></div>
             </div>
             <div class="card-body p-4 p-md-5">
                 <div class="row align-items-center">
