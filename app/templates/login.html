@@ -3,101 +3,242 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - DSS Smartphone</title>
+    <title>Login - DSS SmartPick</title>
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
         body {
-            background-color: #f8fafc;
-            height: 100vh;
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 2rem 1rem;
+            box-sizing: border-box;
+            position: relative;
         }
-        .login-card {
-            border: none;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            overflow: hidden;
+
+        /* Subtle Background Decorative Elements */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -20%;
+            left: -10%;
+            width: 70%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0) 60%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -20%;
+            right: -10%;
+            width: 70%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0) 60%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .login-wrapper {
             width: 100%;
-            max-width: 450px;
+            max-width: 440px;
+            z-index: 10;
+            animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(20px);
         }
-        .login-header {
-            background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
-            padding: 3rem 2rem;
-            color: white;
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Elevated Premium Card */
+        .login-card {
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255,255,255,0.1);
+            padding: 3rem 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Brand Styling */
+        .brand-header {
             text-align: center;
+            margin-bottom: 2.5rem;
         }
-        .login-body {
-            padding: 3rem 2rem;
-            background-color: white;
+
+        .brand-icon-wrapper {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 64px;
+            height: 64px;
+            border-radius: 18px;
+            background: rgba(59, 130, 246, 0.1);
+            margin-bottom: 1.25rem;
+            box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.2);
         }
-        .form-control {
-            padding: 0.8rem 1rem;
-            border-radius: 10px;
-            border: 1px solid #e2e8f0;
-            background-color: #f8fafc;
+
+        .brand-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #0F172A;
+            letter-spacing: -0.025em;
+            margin-bottom: 0.5rem;
         }
-        .form-control:focus {
-            box-shadow: 0 0 0 0.25rem rgba(15, 23, 42, 0.1);
-            border-color: #cbd5e1;
-            background-color: white;
+
+        .brand-subtitle {
+            font-size: 0.95rem;
+            color: #64748B;
+            font-weight: 400;
         }
-        .btn-primary {
-            background-color: #0F172A;
-            border-color: #0F172A;
-            padding: 0.8rem;
-            border-radius: 10px;
+
+        /* Input Fields */
+        .form-label {
             font-weight: 600;
+            font-size: 0.875rem;
+            color: #475569;
+            margin-bottom: 0.5rem;
         }
-        .btn-primary:hover {
-            background-color: #1e293b;
-            border-color: #1e293b;
+
+        .form-control {
+            background-color: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 0.875rem 1.25rem;
+            font-size: 0.95rem;
+            color: #1E293B;
+            transition: all 0.2s ease;
+        }
+
+        .form-control::placeholder {
+            color: #94A3B8;
+        }
+
+        .form-control:focus {
+            background-color: #FFFFFF;
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+            outline: none;
+        }
+
+        /* Custom Button */
+        .btn-login {
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            padding: 0.875rem 1.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.2), 0 2px 4px -2px rgba(15, 23, 42, 0.1);
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.3), 0 4px 6px -4px rgba(15, 23, 42, 0.1);
+            color: #ffffff;
+            background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px -1px rgba(15, 23, 42, 0.2);
+        }
+
+        /* Alert overrides */
+        .alert {
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: none;
+        }
+        .alert-danger {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #B91C1C;
+        }
+        .alert-success {
+            background-color: rgba(34, 197, 94, 0.1);
+            color: #15803D;
         }
     </style>
 </head>
 <body>
 
-    <div class="container d-flex justify-content-center">
+    <div class="login-wrapper">
         <div class="login-card">
-            <div class="login-header">
-                <div class="mb-3">
-                    <i class="bi bi-phone-vibrate text-white fs-1"></i>
+            
+            <div class="brand-header">
+                <div class="brand-icon-wrapper">
+                    <!-- Same Brand SVG as Navbar but larger -->
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="brandGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#3B82F6"/>
+                                <stop offset="100%" stop-color="#10B981"/>
+                            </linearGradient>
+                        </defs>
+                        <rect x="5" y="2" width="14" height="20" rx="3" stroke="url(#brandGradient)" stroke-width="2.5"/>
+                        <path d="M12 18H12.01" stroke="url(#brandGradient)" stroke-width="3" stroke-linecap="round"/>
+                    </svg>
                 </div>
-                <h3 class="fw-bolder mb-1">DSS Smartphone</h3>
-                <p class="text-white-50 small mb-0">Decision Support System using AHP-TOPSIS</p>
+                <h1 class="brand-title">DSS SmartPick</h1>
+                <p class="brand-subtitle">Log in to your dashboard</p>
             </div>
-            <div class="login-body">
-                <h5 class="fw-bold text-dark mb-4 text-center">Sign In</h5>
-                
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                  {% if messages %}
-                    {% for category, message in messages %}
-                      <div class="alert alert-{{ category }} alert-dismissible fade show rounded-3" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                      </div>
-                    {% endfor %}
-                  {% endif %}
-                {% endwith %}
 
-                <form method="POST" action="{{ url_for('auth.login') }}">
-                    <div class="mb-4">
-                        <label for="username" class="form-label text-muted fw-semibold small">Username</label>
-                        <input type="text" class="form-control" id="username" name="username" placeholder="Masukkan username" required autofocus>
-                    </div>
-                    <div class="mb-4">
-                        <label for="password" class="form-label text-muted fw-semibold small">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Masukkan password" required>
-                    </div>
-                    <div class="d-grid mt-4">
-                        <button type="submit" class="btn btn-primary">Login to System</button>
-                    </div>
-                </form>
-            </div>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('auth.login') }}">
+                <div class="mb-4">
+                    <label for="username" class="form-label">Email / Username</label>
+                    <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username" required autofocus>
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required>
+                </div>
+                <div class="mt-5">
+                    <button type="submit" class="btn-login">
+                        Sign In <i class="bi bi-arrow-right-short fs-5"></i>
+                    </button>
+                </div>
+            </form>
+            
         </div>
     </div>
 
+    <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
