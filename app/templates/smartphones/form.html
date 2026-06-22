@@ -24,15 +24,15 @@
                 </div>
 
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold">Skor Foto (1-100)</label>
+                    <label class="form-label fw-semibold">Skor Foto (DxOMark)</label>
                     <input type="number" name="foto" class="form-control" required step="0.01" value="{{ smartphone.foto if smartphone else '' }}">
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold">Skor Video (1-100)</label>
+                    <label class="form-label fw-semibold">Skor Video (DxOMark)</label>
                     <input type="number" name="video" class="form-control" required step="0.01" value="{{ smartphone.video if smartphone else '' }}">
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold">Skor Chipset (Puluhan Ribu)</label>
+                    <label class="form-label fw-semibold">Skor Chipset (nanoreview rating)</label>
                     <input type="number" name="chipset" class="form-control" required step="0.01" value="{{ smartphone.chipset if smartphone else '' }}">
                 </div>
                 <div class="col-md-6">

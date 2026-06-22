@@ -129,8 +129,8 @@
                 <div class="d-inline-block bg-light rounded px-2 py-1 border"><code class="text-dark small">Rumus: W_i = Σ(a'_ij) / n</code></div>
             </div>
             <div class="card-body p-4 p-md-5">
-                <div class="row">
-                    <div class="col-md-5 border-end-md mb-4 mb-md-0 pe-md-4">
+                <div class="row align-items-center">
+                    <div class="col-lg-4 col-md-12 border-end-lg mb-4 mb-lg-0 pe-lg-4">
                         <h6 class="fw-bold text-dark mb-4">Visualisasi Bobot</h6>
                         {% set sorted_criteria = [] %}
                         {% for i in range(criteria|length) %}
@@ -148,23 +148,30 @@
                         </div>
                         {% endfor %}
                     </div>
-                    <div class="col-md-7 ps-md-4">
-                        <h6 class="fw-bold text-dark mb-4">Tabel Vektor Prioritas</h6>
+                    <div class="col-lg-8 col-md-12 ps-lg-4">
+                        <h6 class="fw-bold text-dark mb-4">Tabel Vektor Prioritas & Eigen Value</h6>
                         <div class="table-responsive">
                             <table class="table table-bordered table-hover table-sm text-center align-middle mb-0" style="border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
                                 <thead style="background-color: #F8FAFC;">
                                     <tr>
                                         <th class="py-3 px-4 text-muted">Kriteria</th>
                                         <th class="py-3 px-4 text-primary bg-primary bg-opacity-10">Vektor Prioritas (Bobot)</th>
+                                        <th class="py-3 px-4" style="color: #ea580c; background-color: rgba(234, 88, 12, 0.1);">Eigen Value</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for i in range(criteria|length) %}
                                     <tr>
                                         <th class="text-start py-3 px-4" style="background-color: #F8FAFC; color: #475569;">{{ criteria[i] }}</th>
-                                        <td class="py-3 fw-bold text-primary">{{ "%.4f"|format(ahp.priority_vector[i]) }}</td>
+                                        <td class="py-3 text-primary">{{ "%.4f"|format(ahp.priority_vector[i]) }}</td>
+                                        <td class="py-3" style="color: #ea580c;">{{ "%.4f"|format(ahp.col_sums[i] * ahp.priority_vector[i]) }}</td>
                                     </tr>
                                     {% endfor %}
+                                    <tr class="fw-bolder align-middle" style="background-color: #DBEAFE; color: #1E3A8A; border-top: 2px solid #415f81;">
+                                        <th class="text-end py-3 px-4 text-uppercase" style="font-size: 0.85rem; letter-spacing: 0.5px;">Total</th>
+                                        <td class="py-3 fs-5 text-primary">{{ "%.4f"|format(ahp.priority_vector|sum) }}</td>
+                                        <td class="py-3 fs-5" style="color: #ea580c;">{{ "%.4f"|format(ahp.eigen_value) }}</td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -352,7 +359,7 @@
                     <div class="badge bg-info rounded-pill px-3 py-2 me-3 fs-6">STEP 3</div>
                     <h5 class="fw-bold mb-0 text-dark">Matriks Terbobot</h5>
                 </div>
-                <p class="text-muted mt-2 mb-2 small">Mikalikan matriks normalisasi dengan bobot kriteria AHP.</p>
+                <p class="text-muted mt-2 mb-2 small">Mengalikan matriks normalisasi dengan bobot kriteria AHP.</p>
                 <div class="d-inline-block bg-light rounded px-2 py-1 border"><code class="text-dark small">Rumus: y_ij = r_ij × W_j</code></div>
             </div>
             <div class="card-body p-4 p-md-5">
